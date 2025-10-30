@@ -59,7 +59,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "ai-business-analytics-dashboard-ik6.vercel.app/", 
+        "ai-business-analytics-dashboard.vercel.app/", 
         "https://*.vercel.app",  # Allow all Vercel deployments
         "*"  # Remove this in production and specify exact URL
     ],
