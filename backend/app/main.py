@@ -58,10 +58,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "ai-business-analytics-dashboard.vercel.app/", 
-        "https://*.vercel.app",  # Allow all Vercel deployments
-        "*"  # Remove this in production and specify exact URL
+        "https://ai-business-analytics-dashboard.vercel.app",  # your deployed frontend
+        "http://localhost:3000",  # for local testing
     ],
     allow_credentials=True,
     allow_methods=["*"],
