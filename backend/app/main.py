@@ -57,7 +57,10 @@ app = FastAPI(
 # Enable CORS for frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=[
+        "http://localhost:3000",
+        "ai-business-analytics-dashboard.vercel.app",  # ADD YOUR VERCEL URL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
