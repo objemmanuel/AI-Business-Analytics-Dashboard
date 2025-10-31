@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://ai-business-analytics-dashboard-1.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -92,7 +92,6 @@ export interface ForecastResponse {
 
 export interface AllForecastsResponse {
   success: boolean;
-  error?: string;  // Add optional error field
   forecasts: {
     forecast_period_days: number;
     revenue: ForecastData;

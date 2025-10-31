@@ -32,30 +32,18 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       setLoading(true);
       setError(null);
 
-      // Fetch KPIs and daily metrics (required)
-      const [kpisData, metricsData] = await Promise.all([
+      // Fetch KPIs, daily metrics, and forecasts in parallel
+      const [kpisData, metricsData, forecastsData] = await Promise.all([
         apiService.getKPIs(selectedPeriod),
         customDateRange
           ? apiService.getDailyMetrics(365, customDateRange.start, customDateRange.end)
           : apiService.getDailyMetrics(selectedPeriod),
+        apiService.getAllForecasts(forecastPeriod),
       ]);
 
       setKpis(kpisData);
       setDailyMetrics(metricsData);
-
-      // Try to fetch forecasts (optional - may fail on free tier)
-      try {
-        const forecastsData = await apiService.getAllForecasts(forecastPeriod);
-        if (forecastsData.success) {
-          setForecasts(forecastsData);
-        } else {
-          console.warn('Forecasting unavailable:', forecastsData.error);
-          setForecasts(null);
-        }
-      } catch (forecastError) {
-        console.warn('Forecast fetch failed:', forecastError);
-        setForecasts(null);
-      }
+      setForecasts(forecastsData);
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setError(err.message || 'Failed to fetch data');
@@ -215,27 +203,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         {/* Charts Grid - Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <RevenueChart data={dailyMetrics?.data || []} loading={loading} />
-          {forecasts?.forecasts?.revenue ? (
-            <ForecastChart
-              forecastData={forecasts.forecasts.revenue}
-              title="Revenue Forecast"
-              loading={loading}
-              color="#10b981"
-              prefix="$"
-            />
-          ) : (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-4xl mb-2 block">📊</span>
-                <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
-                  Forecasting temporarily unavailable
-                </p>
-                <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                  (Free tier memory limitation)
-                </p>
-              </div>
-            </div>
-          )}
+          <ForecastChart
+            forecastData={forecasts?.forecasts.revenue || null}
+            title="Revenue Forecast"
+            loading={loading}
+            color="#10b981"
+            prefix="$"
+          />
         </div>
 
         {/* Charts Grid - Row 2: New Pie and Bar Charts */}
