@@ -4,9 +4,9 @@
 
 ## 🌟 Live Demo
 
-- **Frontend**: [https://your-app.vercel.app](https://your-vercel-url.vercel.app)
-- **Backend API**: [https://sentiment-analytics-tool.onrender.com](https://sentiment-analytics-tool.onrender.com)
-- **API Documentation**: [https://sentiment-analytics-tool.onrender.com/docs](https://sentiment-analytics-tool.onrender.com/docs)
+- **Frontend**: [ai-business-analytics-dashboard.vercel.app](ai-business-analytics-dashboard.vercel.app)
+- **Backend API**: [https://ai-business-analytics-dashboard-1.onrender.com](https://ai-business-analytics-dashboard-1.onrender.com)
+- **API Documentation**: [https://ai-business-analytics-dashboard-1.onrender.com/docs](https://ai-business-analytics-dashboard-1.onrender.com/docs)
 
 
 ### Dashboard - Light Mode
