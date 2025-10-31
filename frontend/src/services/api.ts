@@ -92,6 +92,7 @@ export interface ForecastResponse {
 
 export interface AllForecastsResponse {
   success: boolean;
+  error?: string;  // Add optional error field
   forecasts: {
     forecast_period_days: number;
     revenue: ForecastData;

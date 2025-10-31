@@ -3,10 +3,10 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import StreamingResponse
+from io import BytesIO
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import Optional
-from io import BytesIO
 import os
 import sys
 
@@ -414,10 +414,57 @@ async def forecast_all(
             raise HTTPException(status_code=500, detail="Daily data not loaded")
         if forecaster is None:
             raise HTTPException(status_code=500, detail="Forecaster not available")
-        result = forecaster.get_forecast_summary(daily_df, periods)
+        
+        print(f"📊 Starting forecast generation for {periods} days...")
+        
+        # Use smaller dataset for Render free tier (memory optimization)
+        recent_data = daily_df.tail(90)  # Only use last 90 days
+        
+        result = forecaster.get_forecast_summary(recent_data, periods)
+        print(f"✅ Forecast completed successfully")
         return {"success": True, "forecasts": result}
+    except MemoryError as e:
+        print(f"❌ Memory error during forecast: {e}")
+        # Return empty forecast on memory error
+        return {
+            "success": False,
+            "error": "Forecasting unavailable due to memory constraints",
+            "forecasts": {
+                "forecast_period_days": periods,
+                "revenue": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "orders": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "customers": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "churn_rate": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "summary": {
+                    "total_revenue": 0,
+                    "total_orders": 0,
+                    "avg_customers": 0,
+                    "avg_churn_rate": 0
+                }
+            }
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"❌ Error during forecast: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # Return empty forecast on any error
+        return {
+            "success": False,
+            "error": str(e),
+            "forecasts": {
+                "forecast_period_days": periods,
+                "revenue": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "orders": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "customers": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "churn_rate": {"dates": [], "predictions": [], "lower_bound": [], "upper_bound": [], "uncertainty": []},
+                "summary": {
+                    "total_revenue": 0,
+                    "total_orders": 0,
+                    "avg_customers": 0,
+                    "avg_churn_rate": 0
+                }
+            }
+        }
 
 @forecast_router.get("/accuracy")
 async def forecast_accuracy(
